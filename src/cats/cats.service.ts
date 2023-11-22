@@ -1,30 +1,27 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
 import { CreateCatDto } from './dto/create-cat.dto';
-import { Cat } from './schemas/cat.schema';
+import {MongoRepository} from "./repository/MongoRepository";
+import {CatResponseDto} from "./dto/cat-response.dto";
+import {PaginatedDto} from "./dto/paginated.dto";
 
 @Injectable()
 export class CatsService {
-  constructor(@InjectModel(Cat.name) private readonly catModel: Model<Cat>) {}
+  constructor(private readonly repository: MongoRepository) {}
 
-  async create(createCatDto: CreateCatDto): Promise<Cat> {
-    const createdCat = await this.catModel.create(createCatDto);
-    return createdCat;
+  async create(createCatDto: CreateCatDto): Promise<void> {
+    await this.repository.create(createCatDto);
+    return
   }
 
-  async findAll(): Promise<Cat[]> {
-    return this.catModel.find().exec();
+  async findAll(page: number, limit: number): Promise<PaginatedDto<CatResponseDto>> {
+    return this.repository.findAll(page, limit);
   }
 
-  async findOne(id: string): Promise<Cat> {
-    return this.catModel.findOne({ _id: id }).exec();
+  async findOne(id: string): Promise<CatResponseDto> {
+    return this.repository.findOne(id);
   }
 
-  async delete(id: string) {
-    const deletedCat = await this.catModel
-      .findByIdAndRemove({ _id: id })
-      .exec();
-    return deletedCat;
+  async delete(id: string): Promise<void> {
+    await this.repository.delete(id);
   }
 }

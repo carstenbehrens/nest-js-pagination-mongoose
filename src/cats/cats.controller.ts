@@ -1,7 +1,9 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, Post, Query} from '@nestjs/common';
 import { CatsService } from './cats.service';
 import { CreateCatDto } from './dto/create-cat.dto';
 import { Cat } from './schemas/cat.schema';
+import {PaginatedDto} from "./dto/paginated.dto";
+import {CatResponseDto} from "./dto/cat-response.dto";
 
 @Controller('cats')
 export class CatsController {
@@ -13,8 +15,8 @@ export class CatsController {
   }
 
   @Get()
-  async findAll(): Promise<Cat[]> {
-    return this.catsService.findAll();
+  async findAll(@Query('page') page: number, @Query('limit') limit: number): Promise<PaginatedDto<CatResponseDto>> {
+    return this.catsService.findAll(page, limit);
   }
 
   @Get(':id')
