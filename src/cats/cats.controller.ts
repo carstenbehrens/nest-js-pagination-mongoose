@@ -4,6 +4,7 @@ import { CreateCatDto } from './dto/create-cat.dto';
 import { Cat } from './schemas/cat.schema';
 import {PaginatedDto} from "./dto/paginated.dto";
 import {CatResponseDto} from "./dto/cat-response.dto";
+import {PaginationQueryParamsDto} from "./dto/pagination-query-params.dto";
 
 @Controller('cats')
 export class CatsController {
@@ -15,7 +16,8 @@ export class CatsController {
   }
 
   @Get()
-  async findAll(@Query('page') page: number, @Query('limit') limit: number): Promise<PaginatedDto<CatResponseDto>> {
+  async findAll(@Query() paginationQueryParams: PaginationQueryParamsDto): Promise<PaginatedDto<CatResponseDto>> {
+    const { page, limit } = paginationQueryParams
     return this.catsService.findAll(page, limit);
   }
 
